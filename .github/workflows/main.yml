@@ -1,11 +1,10 @@
-
-name: Build Flutter APK
+name: Initialize Flutter App and Build APK
 
 on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -26,12 +25,27 @@ jobs:
         with:
           channel: stable
 
-      - name: Create Flutter project
-        run: flutter create --platforms=android --org com.edaratsocial app
+      - name: Create Flutter project if missing
+        run: |
+          if [ ! -f app/pubspec.yaml ]; then
+            flutter create --platforms=android --org com.edaratsocial app
+          fi
+
+      - name: Save Flutter source to repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app
+          if ! git diff --cached --quiet; then
+            git commit -m "Initialize permanent Flutter Android project"
+            git push
+          fi
 
       - name: Build APK
         working-directory: app
-        run: flutter build apk --release
+        run: |
+          flutter pub get
+          flutter build apk --release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
