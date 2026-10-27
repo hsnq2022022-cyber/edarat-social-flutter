@@ -189,252 +189,1270 @@ void showMessage(BuildContext context, String message) {
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
+  void _notify(BuildContext context, String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: appField,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: BorderSide(color: appBorder),
+          ),
+        ),
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
-      children: [
-        Container(
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              colors: [
-                Color(0xFF124532),
-                Color(0xFF0B241C),
-                Color(0xFF091D17),
-              ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.maxWidth >= 850;
+        final medium = constraints.maxWidth >= 560;
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 30),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1160),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _PremiumDashboardHeading(
+                    onNotifications: () => _notify(
+                      context,
+                      'مركز الإشعارات سيظهر هنا عند تفعيل بيانات الحساب.',
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _PremiumDashboardHero(
+                    wide: wide,
+                    onTest: () => _notify(
+                      context,
+                      'هذه معاينة تصميمية. سيُفتح اختبار الموظف عند ربط شاشة الاختبار.',
+                    ),
+                    onChannels: () => _notify(
+                      context,
+                      'إدارة ربط القنوات موجودة ضمن شاشة القنوات.',
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const _PremiumSectionHeading(
+                    title: 'نظرة عامة',
+                    subtitle: 'مؤشرات توضيحية لتصميم لوحة التحكم',
+                    trailing: _PremiumPreviewBadge(),
+                  ),
+                  const SizedBox(height: 12),
+                  _PremiumMetricGrid(medium: medium),
+                  const SizedBox(height: 24),
+                  if (wide)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Expanded(flex: 6, child: _PremiumInboxPanel()),
+                        SizedBox(width: 16),
+                        Expanded(flex: 5, child: _PremiumAgentPanel()),
+                      ],
+                    )
+                  else ...[
+                    const _PremiumInboxPanel(),
+                    const SizedBox(height: 16),
+                    const _PremiumAgentPanel(),
+                  ],
+                  const SizedBox(height: 24),
+                  if (wide)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _PremiumActivityPanel(wide: wide),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _PremiumFollowUpPanel(
+                            onOpen: () => _notify(
+                              context,
+                              'ستظهر تفاصيل المتابعة هنا بعد ربط بيانات الطلبات.',
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  else ...[
+                    _PremiumActivityPanel(wide: wide),
+                    const SizedBox(height: 16),
+                    _PremiumFollowUpPanel(
+                      onOpen: () => _notify(
+                        context,
+                        'ستظهر تفاصيل المتابعة هنا بعد ربط بيانات الطلبات.',
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 18),
+                  const _PremiumTrustNote(),
+                ],
+              ),
             ),
-            borderRadius: BorderRadius.circular(26),
-            border: Border.all(color: appBorder),
           ),
+        );
+      },
+    );
+  }
+}
+
+class _PremiumDashboardHeading extends StatelessWidget {
+  final VoidCallback onNotifications;
+
+  const _PremiumDashboardHeading({required this.onNotifications});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: appGreen.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.circle,
-                          size: 8,
-                          color: appGreen,
-                        ),
-                        SizedBox(width: 6),
-                        Text(
-                          'مساحة العمل',
-                          style: TextStyle(
-                            color: appGreen,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+                    width: 7,
+                    height: 7,
+                    decoration: const BoxDecoration(
+                      color: appGreen,
+                      shape: BoxShape.circle,
                     ),
                   ),
-                  const Spacer(),
-                  const Icon(
-                    Icons.auto_awesome_rounded,
-                    color: appGold,
-                    size: 27,
+                  const SizedBox(width: 7),
+                  Text(
+                    'مساحة العمل',
+                    style: TextStyle(
+                      color: appGreen,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: .2,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 5),
               const Text(
-                'خلّ الذكاء الاصطناعي\\nيدير محادثاتك',
+                'أهلًا بك في إدارة سوشيال',
                 style: TextStyle(
-                  fontSize: 26,
-                  height: 1.45,
+                  color: Colors.white,
+                  fontSize: 23,
                   fontWeight: FontWeight.w800,
+                  height: 1.25,
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text(
-                'ردود أسرع، متابعة للعملاء، وإدارة قنواتك من مكان واحد.',
+              const SizedBox(height: 5),
+              Text(
+                'كل المحادثات، والردود، وفرص البيع في مكان واحد.',
                 style: TextStyle(
                   color: appMuted,
-                  fontSize: 13,
-                  height: 1.8,
-                ),
-              ),
-              const SizedBox(height: 22),
-              FilledButton.icon(
-                onPressed: () {
-                  showMessage(
-                    context,
-                    'ستتوفر إعدادات الموظف عند ربط النظام',
-                  );
-                },
-                icon: const Icon(Icons.add_rounded),
-                label: const Text('إعداد موظف ذكي'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: appGreen,
-                  foregroundColor: appBg,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 14,
-                  ),
+                  fontSize: 12.5,
+                  height: 1.6,
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 26),
-        const SectionTitle(
-          title: 'نظرة عامة',
-          subtitle: 'ملخص نشاط مساحة عملك',
-        ),
-        const SizedBox(height: 14),
-        const Row(
-          children: [
-            Expanded(
-              child: MetricCard(
-                title: 'المحادثات',
-                value: '128',
-                detail: '+12 هذا الأسبوع',
-                icon: Icons.forum_rounded,
-                color: appGreen,
+        const SizedBox(width: 12),
+        Material(
+          color: appCard,
+          borderRadius: BorderRadius.circular(15),
+          child: InkWell(
+            onTap: onNotifications,
+            borderRadius: BorderRadius.circular(15),
+            child: Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: appBorder),
               ),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: MetricCard(
-                title: 'العملاء',
-                value: '84',
-                detail: 'بيانات تجريبية',
-                icon: Icons.people_alt_rounded,
-                color: Color(0xFF6CA8FF),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        const Row(
-          children: [
-            Expanded(
-              child: MetricCard(
-                title: 'الموظفون',
-                value: '3',
-                detail: 'موظفون تجريبيون',
-                icon: Icons.smart_toy_rounded,
-                color: appGold,
-              ),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: MetricCard(
-                title: 'القنوات',
-                value: '2',
-                detail: 'حالة تجريبية',
-                icon: Icons.hub_rounded,
-                color: appPink,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 28),
-        const SectionTitle(
-          title: 'الوصول السريع',
-          subtitle: 'الأدوات التي تحتاجها يومياً',
-        ),
-        const SizedBox(height: 14),
-        Row(
-          children: [
-            Expanded(
-              child: ShortcutCard(
-                title: 'المحادثات',
-                subtitle: 'تابع رسائل العملاء',
-                icon: Icons.chat_bubble_outline_rounded,
-                color: appGreen,
-                onTap: () => showMessage(
-                  context,
-                  'افتح تبويب المحادثات من الشريط السفلي',
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ShortcutCard(
-                title: 'الموظفون',
-                subtitle: 'إدارة المساعدين',
-                icon: Icons.psychology_alt_rounded,
-                color: appGold,
-                onTap: () => showMessage(
-                  context,
-                  'افتح تبويب الموظفون من الشريط السفلي',
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 26),
-        const SectionTitle(
-          title: 'آخر النشاطات',
-          subtitle: 'أمثلة توضيحية داخل التطبيق',
-        ),
-        const SizedBox(height: 12),
-        const ActivityRow(
-          icon: Icons.mark_chat_read_rounded,
-          color: appGreen,
-          title: 'محادثة جديدة',
-          subtitle: 'وصل استفسار من عميل تجريبي',
-          time: 'قبل 5 دقائق',
-        ),
-        const ActivityRow(
-          icon: Icons.smart_toy_rounded,
-          color: appGold,
-          title: 'الموظف الذكي جاهز',
-          subtitle: 'موظف خدمة العملاء التجريبي',
-          time: 'قبل 20 دقيقة',
-        ),
-        const ActivityRow(
-          icon: Icons.link_rounded,
-          color: Color(0xFF6CA8FF),
-          title: 'إعداد القنوات',
-          subtitle: 'يمكنك مراجعة حالة القنوات',
-          time: 'اليوم',
-        ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: appField,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.info_outline_rounded,
-                color: appMuted,
-                size: 20,
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'الأرقام والنشاطات هنا تجريبية للعرض فقط، وليست بيانات حقيقية من حسابك.',
-                  style: TextStyle(
-                    color: appMuted,
-                    fontSize: 12,
-                    height: 1.7,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Icon(
+                    Icons.notifications_none_rounded,
+                    color: Colors.white,
+                    size: 23,
                   ),
-                ),
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: appGold,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _PremiumDashboardHero extends StatelessWidget {
+  final bool wide;
+  final VoidCallback onTest;
+  final VoidCallback onChannels;
+
+  const _PremiumDashboardHero({
+    required this.wide,
+    required this.onTest,
+    required this.onChannels,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final copy = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: appGreen.withOpacity(.12),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: appGreen.withOpacity(.28)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.auto_awesome_rounded, color: appGreen, size: 14),
+              const SizedBox(width: 6),
+              Text(
+                'موظف الذكاء الاصطناعي',
+                style: TextStyle(
+                  color: appGreen,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+        const Text(
+          'حوّل المحادثات\nإلى فرص بيع حقيقية',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 27,
+            fontWeight: FontWeight.w900,
+            height: 1.32,
+            letterSpacing: -.35,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          'نظّم رسائل قنواتك، اختبر ردود موظفك، وتابع الحالات التي تحتاج قرارك — من لوحة واحدة.',
+          style: TextStyle(
+            color: Colors.white.withOpacity(.72),
+            fontSize: 13,
+            height: 1.85,
+          ),
+        ),
+        const SizedBox(height: 18),
+        Wrap(
+          spacing: 9,
+          runSpacing: 9,
+          children: [
+            FilledButton.icon(
+              onPressed: onTest,
+              style: FilledButton.styleFrom(
+                backgroundColor: appGreen,
+                foregroundColor: appBg,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              icon: const Icon(Icons.play_arrow_rounded, size: 19),
+              label: const Text('اختبر الموظف الذكي'),
+            ),
+            OutlinedButton.icon(
+              onPressed: onChannels,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                side: BorderSide(color: Colors.white.withOpacity(.2)),
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              icon: const Icon(Icons.link_rounded, size: 17),
+              label: const Text('إدارة القنوات'),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    final illustration = SizedBox(
+      width: wide ? 250 : double.infinity,
+      height: wide ? 210 : 150,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: 176,
+            height: 176,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: appGreen.withOpacity(.055),
+              border: Border.all(color: appGreen.withOpacity(.14)),
+            ),
+          ),
+          Container(
+            width: 136,
+            height: 136,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: appGreen.withOpacity(.07),
+              border: Border.all(color: appGreen.withOpacity(.2)),
+            ),
+          ),
+          Container(
+            width: 91,
+            height: 91,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(29),
+              gradient: const LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [Color(0xFF3DD189), Color(0xFF167A55)],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: appGreen.withOpacity(.22),
+                  blurRadius: 35,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.psychology_alt_rounded,
+              color: Color(0xFF061A14),
+              size: 50,
+            ),
+          ),
+          Positioned(
+            top: 17,
+            right: wide ? 22 : 44,
+            child: _PremiumFloatingIcon(
+              icon: Icons.chat_bubble_rounded,
+              color: appGreen,
+            ),
+          ),
+          Positioned(
+            bottom: 19,
+            left: wide ? 24 : 42,
+            child: _PremiumFloatingIcon(
+              icon: Icons.shopping_bag_rounded,
+              color: appGold,
+            ),
+          ),
+          Positioned(
+            top: 45,
+            left: wide ? 21 : 50,
+            child: _PremiumFloatingIcon(
+              icon: Icons.bolt_rounded,
+              color: appPink,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25),
+        gradient: const LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [Color(0xFF103D2B), Color(0xFF0B241C), Color(0xFF092018)],
+        ),
+        border: Border.all(color: appGreen.withOpacity(.23)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.16),
+            blurRadius: 28,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(25),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -100,
+              left: -60,
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: appGreen.withOpacity(.04),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(wide ? 26 : 20),
+              child: wide
+                  ? Row(
+                      children: [
+                        Expanded(child: copy),
+                        const SizedBox(width: 18),
+                        illustration,
+                      ],
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [copy, illustration],
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PremiumFloatingIcon extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+
+  const _PremiumFloatingIcon({required this.icon, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: appCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withOpacity(.38)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(.15), blurRadius: 15),
+        ],
+      ),
+      child: Icon(icon, color: color, size: 20),
+    );
+  }
+}
+
+class _PremiumPreviewBadge extends StatelessWidget {
+  const _PremiumPreviewBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: appGold.withOpacity(.09),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: appGold.withOpacity(.22)),
+      ),
+      child: Text(
+        'معاينة',
+        style: TextStyle(
+          color: appGold,
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
+class _PremiumSectionHeading extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final Widget? trailing;
+
+  const _PremiumSectionHeading({
+    required this.title,
+    required this.subtitle,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: TextStyle(color: appMuted, fontSize: 11.5, height: 1.5),
+              ),
+            ],
+          ),
+        ),
+        if (trailing != null) ...[
+          const SizedBox(width: 8),
+          trailing!,
+        ],
+      ],
+    );
+  }
+}
+
+class _PremiumMetricGrid extends StatelessWidget {
+  final bool medium;
+  const _PremiumMetricGrid({required this.medium});
+
+  @override
+  Widget build(BuildContext context) {
+    final items = <_PremiumMetricData>[
+      _PremiumMetricData(
+        title: 'محادثات اليوم',
+        value: '128',
+        detail: '+18% مقارنة بالأمس',
+        icon: Icons.forum_rounded,
+        color: appGreen,
+        progress: .76,
+      ),
+      _PremiumMetricData(
+        title: 'ردود الموظف',
+        value: '94',
+        detail: 'من إجمالي 128 محادثة',
+        icon: Icons.auto_awesome_rounded,
+        color: const Color(0xFF62B6FF),
+        progress: .69,
+      ),
+      _PremiumMetricData(
+        title: 'فرص بيع',
+        value: '16',
+        detail: 'طلبات تحتاج متابعة',
+        icon: Icons.shopping_bag_rounded,
+        color: appGold,
+        progress: .42,
+      ),
+      _PremiumMetricData(
+        title: 'تحتاج تدخلك',
+        value: '4',
+        detail: 'محادثات بانتظار الفريق',
+        icon: Icons.support_agent_rounded,
+        color: appPink,
+        progress: .22,
+      ),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 980 ? 4 : 2;
+        final gap = 12.0;
+        final width = (constraints.maxWidth - gap * (columns - 1)) / columns;
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          children: items
+              .map((item) => SizedBox(
+                    width: width,
+                    child: _PremiumMetricCard(data: item),
+                  ))
+              .toList(),
+        );
+      },
+    );
+  }
+}
+
+class _PremiumMetricData {
+  final String title;
+  final String value;
+  final String detail;
+  final IconData icon;
+  final Color color;
+  final double progress;
+
+  const _PremiumMetricData({
+    required this.title,
+    required this.value,
+    required this.detail,
+    required this.icon,
+    required this.color,
+    required this.progress,
+  });
+}
+
+class _PremiumMetricCard extends StatelessWidget {
+  final _PremiumMetricData data;
+  const _PremiumMetricCard({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: appCard,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: appBorder),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(.10), blurRadius: 16, offset: const Offset(0, 6)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: data.color.withOpacity(.12),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: data.color.withOpacity(.15)),
+                ),
+                child: Icon(data.icon, color: data.color, size: 21),
+              ),
+              const Spacer(),
+              Icon(Icons.more_horiz_rounded, color: appMuted.withOpacity(.8), size: 21),
+            ],
+          ),
+          const SizedBox(height: 15),
+          Text(
+            data.title,
+            style: TextStyle(color: appMuted, fontSize: 11.5, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            data.value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 29,
+              height: 1.15,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            data.detail,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: appMuted, fontSize: 10.5),
+          ),
+          const SizedBox(height: 13),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: data.progress,
+              minHeight: 4,
+              backgroundColor: appField,
+              valueColor: AlwaysStoppedAnimation<Color>(data.color),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumPanel extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  const _PremiumPanel({required this.child, this.padding = const EdgeInsets.all(17)});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: padding,
+      decoration: BoxDecoration(
+        color: appCard,
+        borderRadius: BorderRadius.circular(21),
+        border: Border.all(color: appBorder),
+      ),
+      child: child,
+    );
+  }
+}
+
+class _PremiumInboxPanel extends StatelessWidget {
+  const _PremiumInboxPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return _PremiumPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const Expanded(
+                child: _PremiumSectionHeading(
+                  title: 'صندوق المحادثات',
+                  subtitle: 'عرض موحّد للقنوات الاجتماعية',
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+                decoration: BoxDecoration(
+                  color: appGreen.withOpacity(.1),
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                child: Text(
+                  'عرض تجريبي',
+                  style: TextStyle(color: appGreen, fontSize: 10, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: const [
+              _PremiumChannelChip(label: 'الكل', active: true, color: appGreen),
+              _PremiumChannelChip(label: 'إنستغرام', color: appPink),
+              _PremiumChannelChip(label: 'فيسبوك', color: Color(0xFF62B6FF)),
+              _PremiumChannelChip(label: 'واتساب', color: Color(0xFF36C977)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const _PremiumConversationTile(
+            initials: 'م',
+            name: 'مها علي',
+            channel: 'إنستغرام',
+            message: 'ممكن أعرف سعر المنتج والتوصيل؟',
+            time: 'قبل 3 د',
+            unread: '2',
+            color: appPink,
+            status: 'بانتظار المتابعة',
+          ),
+          const _PremiumConversationTile(
+            initials: 'ع',
+            name: 'علي حسن',
+            channel: 'فيسبوك',
+            message: 'هل يتوفر لون آخر؟',
+            time: 'قبل 12 د',
+            color: Color(0xFF62B6FF),
+            status: 'ردّ تجريبي',
+          ),
+          const _PremiumConversationTile(
+            initials: 'س',
+            name: 'سارة محمد',
+            channel: 'واتساب',
+            message: 'أريد تأكيد تفاصيل الطلب.',
+            time: 'قبل 25 د',
+            color: Color(0xFF36C977),
+            status: 'تحتاج تأكيدًا',
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('هذه قائمة توضيحية؛ سيُفتح صندوق المحادثات الكامل عند ربطه.'),
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: appField,
+              ),
+            ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: appGreen,
+              side: BorderSide(color: appBorder),
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            icon: const Icon(Icons.forum_outlined, size: 17),
+            label: const Text('فتح صندوق المحادثات', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumChannelChip extends StatelessWidget {
+  final String label;
+  final bool active;
+  final Color color;
+  const _PremiumChannelChip({required this.label, required this.color, this.active = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+      decoration: BoxDecoration(
+        color: active ? appGreen.withOpacity(.12) : appField,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: active ? appGreen.withOpacity(.4) : appBorder),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (!active) ...[
+            Container(width: 6, height: 6, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+            const SizedBox(width: 6),
+          ],
+          Text(
+            label,
+            style: TextStyle(
+              color: active ? appGreen : Colors.white.withOpacity(.78),
+              fontSize: 10.5,
+              fontWeight: active ? FontWeight.w800 : FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumConversationTile extends StatelessWidget {
+  final String initials;
+  final String name;
+  final String channel;
+  final String message;
+  final String time;
+  final String? unread;
+  final Color color;
+  final String status;
+
+  const _PremiumConversationTile({
+    required this.initials,
+    required this.name,
+    required this.channel,
+    required this.message,
+    required this.time,
+    required this.color,
+    required this.status,
+    this.unread,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 9),
+      padding: const EdgeInsets.all(11),
+      decoration: BoxDecoration(
+        color: appField.withOpacity(.65),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: appBorder.withOpacity(.85)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 43,
+            height: 43,
+            decoration: BoxDecoration(
+              color: color.withOpacity(.13),
+              shape: BoxShape.circle,
+              border: Border.all(color: color.withOpacity(.35)),
+            ),
+            alignment: Alignment.center,
+            child: Text(initials, style: TextStyle(color: color, fontSize: 17, fontWeight: FontWeight.w900)),
+          ),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w800)),
+                    ),
+                    const SizedBox(width: 7),
+                    Text(channel, style: TextStyle(color: color, fontSize: 9.5, fontWeight: FontWeight.w700)),
+                    const Spacer(),
+                    Text(time, style: TextStyle(color: appMuted, fontSize: 9.5)),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(message, maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: appMuted, fontSize: 11, height: 1.4)),
+                const SizedBox(height: 7),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(.09),
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Text(status, style: TextStyle(color: color, fontSize: 9, fontWeight: FontWeight.w700)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (unread != null) ...[
+            const SizedBox(width: 7),
+            Container(
+              width: 22,
+              height: 22,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(color: appGreen, shape: BoxShape.circle),
+              child: Text(unread!, style: const TextStyle(color: appBg, fontSize: 10, fontWeight: FontWeight.w900)),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumAgentPanel extends StatelessWidget {
+  const _PremiumAgentPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return _PremiumPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const _PremiumSectionHeading(
+            title: 'الموظف الذكي',
+            subtitle: 'إعدادات الرد وجودة الإجابة',
+          ),
+          const SizedBox(height: 17),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [appGreen.withOpacity(.13), appField.withOpacity(.65)],
+              ),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: appGreen.withOpacity(.2)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: appGreen.withOpacity(.15),
+                    borderRadius: BorderRadius.circular(17),
+                    border: Border.all(color: appGreen.withOpacity(.32)),
+                  ),
+                  child: const Icon(Icons.psychology_alt_rounded, color: appGreen, size: 29),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('موظف خدمة العملاء', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w800)),
+                      SizedBox(height: 5),
+                      Text('يرد من معلومات نشاطك', style: TextStyle(color: appMuted, fontSize: 10.5)),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  decoration: BoxDecoration(color: appGold.withOpacity(.1), borderRadius: BorderRadius.circular(8)),
+                  child: Text('معاينة', style: TextStyle(color: appGold, fontSize: 9.5, fontWeight: FontWeight.w700)),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          const _PremiumProgressLine(label: 'الاعتماد على قاعدة المعرفة', value: .86, valueLabel: 'مرتفع'),
+          const SizedBox(height: 14),
+          const _PremiumProgressLine(label: 'الحاجة إلى تحويل بشري', value: .24, valueLabel: 'منخفض'),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: appGold.withOpacity(.07),
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(color: appGold.withOpacity(.18)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.shield_outlined, color: appGold, size: 18),
+                const SizedBox(width: 9),
+                Expanded(
+                  child: Text(
+                    'عندما لا يجد معلومة مؤكدة، يجب أن يطلب توضيحًا أو يحوّل المحادثة بدل اختراع إجابة.',
+                    style: TextStyle(color: Colors.white.withOpacity(.75), fontSize: 10.5, height: 1.7),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumProgressLine extends StatelessWidget {
+  final String label;
+  final double value;
+  final String valueLabel;
+  const _PremiumProgressLine({required this.label, required this.value, required this.valueLabel});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(child: Text(label, style: TextStyle(color: appMuted, fontSize: 10.5, fontWeight: FontWeight.w600))),
+            Text(valueLabel, style: const TextStyle(color: appGreen, fontSize: 10, fontWeight: FontWeight.w800)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: LinearProgressIndicator(
+            value: value,
+            minHeight: 5,
+            backgroundColor: appField,
+            valueColor: const AlwaysStoppedAnimation<Color>(appGreen),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PremiumActivityPanel extends StatelessWidget {
+  final bool wide;
+  const _PremiumActivityPanel({required this.wide});
+
+  @override
+  Widget build(BuildContext context) {
+    const heights = [25.0, 38.0, 31.0, 51.0, 42.0, 66.0, 49.0];
+    const days = ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج'];
+    return _PremiumPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const _PremiumSectionHeading(
+            title: 'نشاط المحادثات',
+            subtitle: 'توزيع توضيحي خلال الأسبوع',
+          ),
+          const SizedBox(height: 20),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: List.generate(heights.length, (index) {
+              final selected = index == 5;
+              return Expanded(
+                child: Padding(
+                  padding: EdgeInsetsDirectional.only(end: index == heights.length - 1 ? 0 : 8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        height: heights[index],
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: selected
+                                ? [appGreen, appGreen.withOpacity(.34)]
+                                : [appGreen.withOpacity(.42), appGreen.withOpacity(.09)],
+                          ),
+                          border: Border.all(color: appGreen.withOpacity(selected ? .5 : .12)),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(days[index], style: TextStyle(color: selected ? appGreen : appMuted, fontSize: 10, fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 14),
+          Divider(color: appBorder, height: 1),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Container(width: 7, height: 7, decoration: const BoxDecoration(color: appGreen, shape: BoxShape.circle)),
+              const SizedBox(width: 7),
+              Expanded(child: Text('أعلى نشاط في نهاية الأسبوع', style: TextStyle(color: appMuted, fontSize: 10.5))),
+              Text('توضيحي', style: TextStyle(color: appMuted.withOpacity(.7), fontSize: 9.5)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumFollowUpPanel extends StatelessWidget {
+  final VoidCallback onOpen;
+  const _PremiumFollowUpPanel({required this.onOpen});
+
+  @override
+  Widget build(BuildContext context) {
+    return _PremiumPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const Expanded(
+                child: _PremiumSectionHeading(
+                  title: 'متابعة ذكية',
+                  subtitle: 'أمثلة على حالات تحتاج انتباهك',
+                ),
+              ),
+              Icon(Icons.task_alt_rounded, color: appGold, size: 21),
+            ],
+          ),
+          const SizedBox(height: 13),
+          const _PremiumFollowUpItem(
+            icon: Icons.person_search_rounded,
+            color: appGold,
+            title: 'استفسار يحتاج قرارًا',
+            detail: 'معلومة غير متوفرة في قاعدة المعرفة',
+            tag: 'مراجعة',
+          ),
+          const SizedBox(height: 9),
+          const _PremiumFollowUpItem(
+            icon: Icons.local_shipping_outlined,
+            color: appGreen,
+            title: 'تأكيد تفاصيل الطلب',
+            detail: 'التحقق من العنوان قبل الإتمام',
+            tag: 'طلب',
+          ),
+          const SizedBox(height: 9),
+          const _PremiumFollowUpItem(
+            icon: Icons.schedule_rounded,
+            color: Color(0xFF62B6FF),
+            title: 'موعد يحتاج تأكيدًا',
+            detail: 'تأكيد الوقت مع العميل',
+            tag: 'موعد',
+          ),
+          const SizedBox(height: 14),
+          TextButton.icon(
+            onPressed: onOpen,
+            style: TextButton.styleFrom(
+              foregroundColor: appGreen,
+              alignment: AlignmentDirectional.centerStart,
+              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 7),
+            ),
+            icon: const Icon(Icons.arrow_back_rounded, size: 17),
+            label: const Text('عرض قائمة المتابعة', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumFollowUpItem extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String detail;
+  final String tag;
+
+  const _PremiumFollowUpItem({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.detail,
+    required this.tag,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(11),
+      decoration: BoxDecoration(
+        color: appField.withOpacity(.55),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: appBorder.withOpacity(.8)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 37,
+            height: 37,
+            decoration: BoxDecoration(color: color.withOpacity(.11), borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 4),
+                Text(detail, maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: appMuted, fontSize: 9.5)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 7),
+          Text(tag, style: TextStyle(color: color, fontSize: 9.5, fontWeight: FontWeight.w800)),
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumTrustNote extends StatelessWidget {
+  const _PremiumTrustNote();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: appCard.withOpacity(.72),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: appBorder.withOpacity(.85)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.lock_outline_rounded, size: 17, color: appMuted),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Text(
+              'المعلومات والأرقام الظاهرة هنا أمثلة تصميمية فقط، وليست بيانات حساب متصل. سيظهر المحتوى الحقيقي بعد ربط خدمات التطبيق.',
+              style: TextStyle(color: appMuted, fontSize: 10.5, height: 1.6),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -493,7 +1511,7 @@ class MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: appCard,
         borderRadius: BorderRadius.circular(20),
@@ -503,15 +1521,15 @@ class MetricCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
               color: color.withOpacity(0.13),
               borderRadius: BorderRadius.circular(13),
             ),
             child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             value,
             style: const TextStyle(
