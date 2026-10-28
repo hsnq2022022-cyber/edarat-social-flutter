@@ -30,7 +30,7 @@ class EdaratSocialApp extends StatelessWidget {
           surface: appCard,
           secondary: appGold,
         ),
-        fontFamily: 'Roboto',
+        fontFamily: 'Handicrafts',
         appBarTheme: const AppBarTheme(
           backgroundColor: appBg,
           foregroundColor: Colors.white,
