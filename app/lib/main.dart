@@ -147,12 +147,13 @@ class _AppShellState extends State<AppShell> {
           },
           destinations: const [
             NavigationDestination(
-              icon: Icon(Icons.grid_view_rounded),
+              icon: Icon(Icons.dashboard_outlined),
+              selectedIcon: Icon(Icons.dashboard_rounded),
               label: 'الرئيسية',
             ),
             NavigationDestination(
-              icon: Icon(Icons.forum_outlined),
-              selectedIcon: Icon(Icons.forum_rounded),
+              icon: Icon(Icons.chat_bubble_outline_rounded),
+              selectedIcon: Icon(Icons.chat_bubble_rounded),
               label: 'المحادثات',
             ),
             NavigationDestination(
@@ -161,12 +162,13 @@ class _AppShellState extends State<AppShell> {
               label: 'الموظفون',
             ),
             NavigationDestination(
-              icon: Icon(Icons.hub_outlined),
-              selectedIcon: Icon(Icons.hub_rounded),
+              icon: Icon(Icons.share_outlined),
+              selectedIcon: Icon(Icons.share_rounded),
               label: 'القنوات',
             ),
             NavigationDestination(
-              icon: Icon(Icons.menu_rounded),
+              icon: Icon(Icons.apps_outlined),
+              selectedIcon: Icon(Icons.apps_rounded),
               label: 'المزيد',
             ),
           ],
