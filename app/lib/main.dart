@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-const Color appBg = Color(0xFF061A14);
-const Color appCard = Color(0xFF0B241C);
-const Color appField = Color(0xFF0F2E24);
-const Color appBorder = Color(0xFF173D30);
-const Color appGreen = Color(0xFF3DD189);
-const Color appMuted = Color(0xFF8B9E96);
-const Color appGold = Color(0xFFE5B54B);
-const Color appPink = Color(0xFFE1306C);
+const Color appBg = Color(0xFF000000);
+const Color appCard = Color(0xFF101012);
+const Color appField = Color(0xFF19191D);
+const Color appBorder = Color(0xFF26262B);
+const Color appGreen = Color(0xFFFF315D);
+const Color appMuted = Color(0xFF9999A1);
+const Color appGold = Color(0xFFFFC857);
+const Color appPink = Color(0xFFFF315D);
 
 void main() {
   runApp(const EdaratSocialApp());
@@ -140,38 +140,63 @@ class _AppShellState extends State<AppShell> {
           index: selectedIndex,
           children: pages,
         ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: selectedIndex,
-          onDestinationSelected: (index) {
-            setState(() => selectedIndex = index);
-          },
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.dashboard_outlined),
-              selectedIcon: Icon(Icons.dashboard_rounded),
-              label: 'الرئيسية',
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 7),
+            decoration: BoxDecoration(
+              color: const Color(0xFF101012).withOpacity(0.97),
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: const Color(0xFF29292E)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.24),
+                  blurRadius: 18,
+                  offset: const Offset(0, 5),
+                ),
+              ],
             ),
-            NavigationDestination(
-              icon: Icon(Icons.chat_bubble_outline_rounded),
-              selectedIcon: Icon(Icons.chat_bubble_rounded),
-              label: 'المحادثات',
+            child: Row(
+              children: [
+                _OttoNavItem(
+                  label: 'الرئيسية',
+                  icon: Icons.dashboard_outlined,
+                  selectedIcon: Icons.dashboard_rounded,
+                  selected: selectedIndex == 0,
+                  onTap: () => setState(() => selectedIndex = 0),
+                ),
+                _OttoNavItem(
+                  label: 'المحادثات',
+                  icon: Icons.chat_bubble_outline_rounded,
+                  selectedIcon: Icons.chat_bubble_rounded,
+                  selected: selectedIndex == 1,
+                  onTap: () => setState(() => selectedIndex = 1),
+                ),
+                _OttoNavItem(
+                  label: 'الموظفون',
+                  icon: Icons.smart_toy_outlined,
+                  selectedIcon: Icons.smart_toy_rounded,
+                  selected: selectedIndex == 2,
+                  onTap: () => setState(() => selectedIndex = 2),
+                ),
+                _OttoNavItem(
+                  label: 'القنوات',
+                  icon: Icons.share_outlined,
+                  selectedIcon: Icons.share_rounded,
+                  selected: selectedIndex == 3,
+                  onTap: () => setState(() => selectedIndex = 3),
+                ),
+                _OttoNavItem(
+                  label: 'المزيد',
+                  icon: Icons.apps_outlined,
+                  selectedIcon: Icons.apps_rounded,
+                  selected: selectedIndex == 4,
+                  onTap: () => setState(() => selectedIndex = 4),
+                ),
+              ],
             ),
-            NavigationDestination(
-              icon: Icon(Icons.smart_toy_outlined),
-              selectedIcon: Icon(Icons.smart_toy_rounded),
-              label: 'الموظفون',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.share_outlined),
-              selectedIcon: Icon(Icons.share_rounded),
-              label: 'القنوات',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.apps_outlined),
-              selectedIcon: Icon(Icons.apps_rounded),
-              label: 'المزيد',
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -186,6 +211,81 @@ void showMessage(BuildContext context, String message) {
       backgroundColor: appField,
     ),
   );
+}
+
+class _OttoNavItem extends StatelessWidget {
+  const _OttoNavItem({
+    required this.label,
+    required this.icon,
+    required this.selectedIcon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final IconData selectedIcon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: label,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(24),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 260),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
+            decoration: BoxDecoration(
+              color: selected
+                  ? appGreen.withOpacity(0.14)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedScale(
+                  scale: selected ? 1.08 : 1.0,
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  child: Icon(
+                    selected ? selectedIcon : icon,
+                    size: 24,
+                    color: selected ? appGreen : appMuted,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  style: TextStyle(
+                    color: selected ? appGreen : appMuted,
+                    fontSize: 10.5,
+                    fontWeight:
+                        selected ? FontWeight.bold : FontWeight.w500,
+                  ),
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class DashboardPage extends StatelessWidget {
